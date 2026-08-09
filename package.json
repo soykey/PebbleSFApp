@@ -1,0 +1,38 @@
+{
+  "name": "sf",
+  "author": "soykey",
+  "version": "3.2.0",
+  "keywords": [
+    "pebble-app",
+    "alloy",
+    "super-formula"
+  ],
+  "private": true,
+  "dependencies": {},
+  "pebble": {
+    "displayName": "sfwatch",
+    "uuid": "ca6aee97-f8f4-403a-b9c5-33f6eecb66cf",
+    "projectType": "moddable",
+    "sdkVersion": "3",
+    "enableMultiJS": true,
+    "targetPlatforms": [
+      "gabbro"
+    ],
+    "watchapp": {
+      "watchface": false
+    },
+    "messageKeys": [
+      "COMMAND",
+      "PAGE",
+      "STATUS",
+      "UPDATED",
+      "LAPS",
+      "WEATHER",
+      "PAGE_INFO",
+      "ROWS"
+    ],
+    "resources": {
+      "media": []
+    }
+  }
+}
