@@ -1,8 +1,7 @@
 {
-<<<<<<< HEAD
   "name": "sf",
   "author": "soykey",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "keywords": [
     "pebble-app",
     "alloy",
@@ -36,30 +35,4 @@
       "media": []
     }
   }
-=======
-    "author": "soykey",
-    "dependencies": {},
-    "keywords": [
-        "pebble-app"
-    ],
-    "name": "sf",
-    "pebble": {
-        "displayName": "sfwatch",
-        "enableMultiJS": true,
-        "messageKeys": [],
-        "projectType": "moddable",
-        "resources": {
-            "media": []
-        },
-        "sdkVersion": "3",
-        "targetPlatforms": [
-            "gabbro"
-        ],
-        "uuid": "ca6aee97-f8f4-403a-b9c5-33f6eecb66cf",
-        "watchapp": {
-            "watchface": false
-        }
-    },
-    "version": "1.0.0"
->>>>>>> a5d28790387002ceca77ef127f43c66d2c0cda3d
 }
