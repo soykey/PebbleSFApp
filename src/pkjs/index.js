@@ -64,9 +64,22 @@ function normalizedPage(page) {
   return page;
 }
 function displayStatus() {
-  if (!connected) return "OFFLINE";
-  if (state.session === "FINAL" && state.rows.length) return "FINAL";
-  return state.rows.length ? "LIVE" : state.session;
+  /*
+   * 最終結果を持っている場合は、接続状態よりFINALを優先する。
+   */
+  if (isFinalSession() && state.rows.length > 0) {
+    return "FINAL";
+  }
+
+  if (!connected) {
+    return state.rows.length > 0 ? "RECONNECT" : "OFFLINE";
+  }
+
+  if (state.rows.length > 0) {
+    return "LIVE";
+  }
+
+  return state.session || "CONNECTING";
 }
 function sendPage(page) {
   currentPage = normalizedPage(page);
@@ -138,14 +151,52 @@ function connect() {
   };
   socket.onerror = function() { console.log("RaceNow socket error"); };
   socket.onclose = function() {
+    console.log("RaceNow disconnected");
+
     connected = false;
     socket = null;
+
+    /*
+    * 最終結果を取得済みなら、WebSocketが閉じても結果を維持する。
+    * 終了後は新しい更新がないため、すぐには再接続しない。
+    */
+    if (isFinalSession() && state.rows.length > 0) {
+      sendPage(currentPage);
+      return;
+    }
+
+    /*
+    * ライブセッション中、または有効な順位をまだ取得していない場合は
+    * 再接続する。
+    */
     sendPage(currentPage);
     scheduleReconnect();
   };
 }
+function isFinalSession() {
+  return String(state.session || "")
+    .trim()
+    .toUpperCase() === "FINAL";
+}
+
 function checkStale() {
-  if (connected && state.lastMessageAt && Date.now() - state.lastMessageAt > STALE_MS) {
+  /*
+   * 終了済みセッションでは、最終結果のスナップショット受信後に
+   * 更新が来なくなるのが正常なので、無通信による再接続を行わない。
+   */
+  if (isFinalSession() && state.rows.length > 0) {
+    return;
+  }
+
+  /*
+   * 走行中または順位未取得の状態で、一定時間メッセージがなければ
+   * WebSocketを再接続する。
+   */
+  if (
+    connected &&
+    state.lastMessageAt &&
+    Date.now() - state.lastMessageAt > STALE_MS
+  ) {
     console.log("RaceNow stale; reconnecting");
     connect();
   }
