@@ -56,6 +56,7 @@ let oldOffset = 0;
 let animationTimer = null;
 let pendingDirection = 1;
 let animateNextRows = false;
+let initialPhoneRequestSent = false;
 
 function centerText(text, font, color, y) {
   const width = render.getTextWidth(text, font);
@@ -222,12 +223,20 @@ const message = new Message({
     } else draw();
   },
   onWritable() {
+    // onWritable is also called again after each AppMessage send completes.
+    // Only the first writable event should trigger the initial refresh.
     writable = true;
-    requestPage(page, true);
+    if (!initialPhoneRequestSent) {
+      initialPhoneRequestSent = true;
+      requestPage(page, true);
+    } else {
+      draw();
+    }
   },
   onSuspend() {
+    // Suspend is often temporary while an AppMessage is in flight.
+    // Do not mark the phone offline or replace FINAL/LIVE during that cycle.
     writable = false;
-    if (!gotPhoneData && !demo) status = "PHONE OFFLINE";
     draw();
   }
 });
